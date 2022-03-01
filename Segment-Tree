@@ -1,0 +1,67 @@
+//线段树 && 相关操作
+
+const int maxn = 1e4+3;
+
+int t[maxn<<2];
+int lazy[maxn<<2];
+
+int num[maxn];
+
+void init (int p, int l, int r)
+{
+    if (l == r) t[p] = num[l];
+        
+    int mid = l + (r-l) >> 1;
+    
+    init ( p << 1, l, mid);
+    init ( (p << 1)|1, mid+1, r);
+    
+    t[p] = t[p << 1] + t[ (p << 1)|1];
+}
+
+void update (int p, int x, int y, int num, int l, int r)
+{
+    if (x <= l && r <= y)
+    {
+        t[p] += (r - l + 1) * num;
+        lazy[p] += num;
+    }
+    
+    int mid = l + (r-l) >> 1;
+    
+    if (lazy[p])
+    {
+        t[p << 1] += (mid - l + 1) * lazy[p];
+        t[(p << 1)|1] += (r - mid) * lazy[p];
+        lazy[p << 1] += lazy[p];
+        lazy[(p << 1)|1] += lazy[p];
+    }
+    lazy[p] = 0;
+    
+    if (x <= mid) update (p << 1, x, y, num, l, mid);
+    if (mid < r) update ((p << 1)|1, x, y, num, mid+1, r);
+       
+    t[p] = t[p << 1] + t[ (p << 1)|1];
+}
+
+int query (int p, int x, int y, int l, int r)
+{
+    if ( x <= l && r <= y) return t[p];
+        
+    int mid = l + (r-l) >> 1;
+    
+    if (lazy[p])
+    {
+        t[p << 1] += (mid - l + 1) * lazy[p];
+        t[(p << 1)|1] += (r - mid) * lazy[p];
+        lazy[p << 1] += lazy[p];
+        lazy[(p << 1)|1] += lazy[p];
+    }
+    lazy[p] = 0;
+
+    int ans = 0;
+    if (x <= mid) ans += query (p << 1, x, y, l, mid);
+    if (mid <y ) ans += query ((p << 1)|1, x, y, mid+1, r);
+    return ans;
+}
+
