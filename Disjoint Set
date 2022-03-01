@@ -28,5 +28,29 @@ void build (int x,int y) // 按秩合并
         vis[dx] < vis[dy] ? f[dx] = dy : f[dy] = dx;
 }
 
+/* 以下代码为普通合并，即不需要进行按秩合并的操作
+
+void build (int x,int y)
+{
+    int dx=find(x);
+    int dy=find(y);
+    
+    f[dx]=dy;
+}
+*/
+
+int count_set(int n) // 并查集中存在多少个不同的集合
+{
+    int ans=0;
+    for (int i=1;i<=n;i++)
+        if (find[i] == i)
+            ans++;
+    return ans;
+}
+
+
+
+
+
 
 
