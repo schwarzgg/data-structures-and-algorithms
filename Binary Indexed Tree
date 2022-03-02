@@ -1,0 +1,55 @@
+// 树状数组 && 相关操作
+
+
+const int maxn = 1e4 + 3;
+
+int t[maxn];
+int num[maxn];
+
+int lowbit(int x) //lowbit操作（每次取x的最后一个1的位置）
+{
+    return x&(-x);
+}
+
+void init(int n) // 初始化树状数组 （O（n）建立）
+{
+    for (int i=1;i<=n;i++)
+    {
+        t[i] += num[i];
+        if (i + lowbit(i) <= n)  // 每次确定子节点后，反过来更新父节点
+            t[(i + lowbit(i))] += t[i];
+    }
+}
+
+void update(int p, int x, int n) // 单点修改
+{
+    while (p <= n)
+        t[p] += x,p += lowbit(p);
+}
+
+int query(int x) // 求前缀和
+{
+    int sum = 0;
+    
+    while (x)
+        sum += t[x],x -= lowbit(x);
+    return sum;
+}
+
+/*
+区间修改 && 区间求和
+
+//利用差分
+void update_interval (int x, int l, int r) //区间修改
+{
+    update(l, x);
+    update(r + 1, -x);
+}
+
+int query_interval (int l, int r) // 区间求和
+{
+    return (query(r) - query(l-1));
+}
+
+
+
