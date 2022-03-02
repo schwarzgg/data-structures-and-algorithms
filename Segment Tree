@@ -1,0 +1,67 @@
+//线段树 && 相关操作
+
+const int maxn = 1e4+3;
+
+int t[maxn<<2]; // 开辟 4*n 的空间大小
+int lazy[maxn<<2]; // 懒惰标记
+
+int num[maxn]; // 数据数组
+
+void init (int p, int l, int r) // 创建线段树
+{
+    if (l == r) t[p] = num[l];
+        
+    int mid = l + (r-l) >> 1; // 防爆措施，下同
+    
+    init ( p << 1, l, mid);
+    init ( (p << 1)|1, mid+1, r); // 递归构建根节点的左右子树
+    
+    t[p] = t[p << 1] + t[ (p << 1)|1]; // 更新父节点存储的值
+}
+
+void update (int p, int x, int y, int num, int l, int r) // 区间修改操作
+{
+    if (x <= l && r <= y) // 如果修改区间[x,y]在管辖区间[l,r]中，则直接返回
+    {
+        t[p] += (r - l + 1) * num;
+        lazy[p] += num;
+    }
+    
+    int mid = l + (r-l) >> 1;
+    
+    if (lazy[p]) // 处理懒惰标记，将标记计数下发给自己的左右子树
+    {
+        t[p << 1] += (mid - l + 1) * lazy[p];
+        t[(p << 1)|1] += (r - mid) * lazy[p];
+        lazy[p << 1] += lazy[p];
+        lazy[(p << 1)|1] += lazy[p];
+    }
+    lazy[p] = 0; // 清除标记计数，避免重复修改
+    
+    if (x <= mid) update (p << 1, x, y, num, l, mid); 
+    if (mid < r) update ((p << 1)|1, x, y, num, mid+1, r); // 递归更新左右子树
+       
+    t[p] = t[p << 1] + t[ (p << 1)|1]; // 更新父节点存储的值
+}
+
+int query (int p, int x, int y, int l, int r) // 查询
+{
+    if ( x <= l && r <= y) return t[p];  //如果查询区间[x,y]在管辖区间[l,r]中，则直接返回
+        
+    int mid = l + (r-l) >> 1;
+    
+    if (lazy[p])
+    {
+        t[p << 1] += (mid - l + 1) * lazy[p];
+        t[(p << 1)|1] += (r - mid) * lazy[p];
+        lazy[p << 1] += lazy[p];
+        lazy[(p << 1)|1] += lazy[p];
+    }
+    lazy[p] = 0;
+
+    int ans = 0;
+    if (x <= mid) ans += query (p << 1, x, y, l, mid);
+    if (mid <y ) ans += query ((p << 1)|1, x, y, mid+1, r); // 递归查询左右子树
+    return ans;
+}
+
