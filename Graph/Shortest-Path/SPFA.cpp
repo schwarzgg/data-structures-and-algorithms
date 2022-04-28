@@ -1,4 +1,5 @@
 const int maxn = 1e4 + 3;
+const int inf = 0x7fffffff;
 
 struct Node {
   int v, w;
