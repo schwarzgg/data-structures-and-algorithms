@@ -22,7 +22,7 @@ struct dsu{
     else c--;
     
     if (rk[x] > rk[y]) swap(x,y);
-    par[x] = par[y],size[y]+=size[x];
+    par[x] = y,size[y]+=size[x];
     if (rk[x] == rk[y]) rk[y]++;
     return j;
   }
